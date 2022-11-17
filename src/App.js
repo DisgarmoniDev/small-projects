@@ -1,48 +1,128 @@
-import { Modal } from 'components/modal/modal';
 import { useState } from 'react';
 import './index.scss';
 
-function App() {
-  const [open, setOpen] = useState(false)
+const questions = [
+  {
+    id:1,
+    title: 'React - это ... ?',
+    variants: ['библиотека', 'фреймворк', 'приложение'],
+    correct: 0,
+  },
+  {
+    id:2,
+    title: 'Компонент - это ... ',
+    variants: ['приложение', 'часть приложения или страницы', 'то, что я не знаю что такое'],
+    correct: 1,
+  },
+  {
+    id:3,
+    title: 'Что такое JSX?',
+    variants: [
+      'Это простой HTML',
+      'Это функция',
+      'Это тот же HTML, но с возможностью выполнять JS-код',
+    ],
+    correct: 2,
+  },
+  {
+    id:4,
+    title: 'Как объявить переменные в ES-6',
+    variants: [
+      'var, const',
+      'var, let, const',
+      'let, const',
+    ],
+    correct: 2,
+  },
+  {
+    id:5,
+    title: 'Как изменить цвет в svg-файле через css?',
+    variants: [
+      'background-color',
+      'fill',
+      'color',
+    ],
+    correct: 1,
+  },
+  {
+    id:6,
+    title: 'Метод перебора массива js?',
+    variants: [
+      'map',
+      'forEach',
+      'filter',
+    ],
+    correct: 1,
+  },
+  {
+    id:7,
+    title: 'Создание объекта в js?',
+    variants: [
+      'let user = ["Иван", "Василий", "Пётр"]',
+      'let user = {name:Иван, name:Василий}',
+      'let user = [{name:Иван},{name:Пётр}]',
+    ],
+    correct: 1,
+  },
+];
 
+function Result({ correct }) {
+  return (
+    <div className="result">
+      <img src="img/win.png" />
+      <h2>Вы отгадали {correct} ответа из {questions.length}</h2>
+      <a href="/">
+        <button>Попробовать снова</button>
+      </a>
+    </div>
+  );
+}
+
+function Game({ question, onClickVariant, step }) {
+  const interest = Math.round((step/questions.length)*100)
+
+  return (
+    <>
+      <div className="progress">
+        <div style={{ width: `${interest}%` }} className="progress__inner"></div>
+      </div>
+      <h1>{question.title}</h1>
+      <ul>
+        {question.variants.map((qq, variantNumber)=>
+          <li onClick={() => onClickVariant(variantNumber)} key={qq}>{qq}</li>
+        )}
+      </ul>
+    </>
+  );
+}
+
+function App() {
+  const [step, setStep] = useState(0)
+  const question = questions[step]
+
+  const onClickVariant = ( variantNumber ) => {
+    console.log(step, variantNumber )
+    setStep(step + 1)
+    if (variantNumber === question.correct) {
+      setCorrect(correct+1)
+    }
+  }
+
+  const [correct, setCorrect] =useState(0)
 
   return (
     <div className="App">
-      <button onClick={() => setOpen(true)} className="open-modal-btn">⚛ Открыть окно ⚛</button>
-
-      {/* условный рендер. окно без анимации
       {
-        open && (
-        <div className="overlay">
-          <div className="modal">
-            <svg onClick={()=> setOpen(false)} height="200" viewBox="0 0 200 200" width="200">
-              <title />
-              <path d="M114,100l49-49a9.9,9.9,0,0,0-14-14L100,86,51,37A9.9,9.9,0,0,0,37,51l49,49L37,149a9.9,9.9,0,0,0,14,14l49-49,49,49a9.9,9.9,0,0,0,14-14Z" />
-            </svg>
-            <img src="img/wow.gif" />
-          </div>
-        </div>
-        )
-      } */}
-      
-      {/* модальное окно через добавление класса
-      <div className={`overlay animated ${open ? 'show' : ''}`}>
-          <div className="modal">
-            <svg onClick={()=> setOpen(false)} height="200" viewBox="0 0 200 200" width="200">
-              <title />
-              <path d="M114,100l49-49a9.9,9.9,0,0,0-14-14L100,86,51,37A9.9,9.9,0,0,0,37,51l49,49L37,149a9.9,9.9,0,0,0,14,14l49-49,49,49a9.9,9.9,0,0,0,14-14Z" />
-            </svg>
-            <img src="img/wow.gif" />
-          </div>
-        </div> */}
-
-        {/* через компонент */}
-        <Modal 
-          open={open}
-          setOpen={setOpen}>
-            <img src="img/wow.gif" alt="" />
-            <p>Модальное окно</p>
-          </Modal>
+        step !== questions.length? 
+        <Game 
+        question={question} 
+        onClickVariant={onClickVariant}
+        step={step}
+        />
+        : <Result 
+            correct={correct}
+        />
+      }
     </div>
   );
 }
